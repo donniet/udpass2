@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+  <style type="text/css" rel="stylesheet">
+  pre#messages {
+    position:absolute;
+    width: 100%;
+    height: 75%;
+    top: 0;
+    left: 0;
+    overflow: scroll;
+  }
+  #input {
+    position:absolute;
+    width: 75%;
+    height: 25%;
+    top: 75%;
+    left: 0;
+    border: none;
+  }
+  input#submit {
+    position:absolute;
+    width: 25%;
+    height: 25%;
+    top: 75%;
+    left: 75%;
+  }
+  </style>
+  <script type="text/javascript">
+    var messages, input, submit, socket, reconnect;
+
+    const socketUrl = "{{.SocketURL}}";
+
+    function logMessage(msg) {
+      messages.appendChild(document.createTextNode(msg+"\n"));
+    }
+
+    function onload() {
+      messages = document.getElementById("messages");
+      input = document.getElementById("input");
+      submit = document.getElementById("submit");
+
+      openConnection();
+    }
+
+    function openConnection() {
+      socket = new WebSocket(socketUrl);
+
+
+      submit.onclick = function() {
+        socket.send(input.value);
+      }
+      socket.onerror = function(e) {
+        console.log(socket, e);
+      }
+      socket.onopen = function() {
+        logMessage("open")
+      }
+      socket.onmessage = function(msg) {
+        logMessage(msg.data);
+      }
+      socket.onclose = function() {
+        logMessage("closed");
+      }
+    }
+  </script>
+</head>
+<body onload="onload()">
+  <pre id="messages"></pre>
+  <textarea type="text" id="input">
+    {"send":{"message":"blah","to":{"server":":13865","id":"SYVPzNTUjqAM3M29zm29+e2oasGRUv6e"}}}
+  </textarea>
+  <input type="submit" value="send" id="submit"></input>
+</body>
+</html>
